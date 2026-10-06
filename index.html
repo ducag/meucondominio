@@ -283,7 +283,7 @@
           Os dados ficam no seu computador.</p>
         <div class="placa">
           <dl>
-            <dt>Versão</dt><dd>1.1.0</dd>
+            <dt>Versão</dt><dd class="js-versao">2.1.0</dd>
             <dt>Sistema</dt><dd>Windows 10 / 11 · 64 bits</dd>
             <dt>Ficheiro</dt><dd>MeuCondominio_Setup.exe</dd>
             <dt>Tamanho</dt><dd>49 MB</dd>
@@ -447,7 +447,7 @@
 
   <footer>
     <span>© <span id="ano">2026</span> Meu Condomínio</span>
-    <span>Versão 1.1.0 · Windows 10 e 11</span>
+    <span>Versão <span class="js-versao">2.1.0</span> · Windows 10 e 11</span>
   </footer>
 </div>
 
@@ -534,4 +534,13 @@
     botoes.forEach(function (b) { b.addEventListener('click', function () { mostrar(b.dataset.ecra); }); });
     mostrar('dividas');
   })();
+// Versão e link do instalador vêm do versao.json publicado ao lado (o mesmo que as
+// aplicações instaladas leem) — assim o site nunca fica desatualizado.
+fetch('versao.json', {cache: 'no-store'}).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+  if (!d || !d.versao) return;
+  document.querySelectorAll('.js-versao').forEach(function (el) { el.textContent = d.versao; });
+  if (d.url) document.querySelectorAll('a').forEach(function (a) {
+    if (a.href && a.href.indexOf('drive.usercontent.google.com/download') >= 0) a.href = d.url;
+  });
+}).catch(function () {});
 </script>
