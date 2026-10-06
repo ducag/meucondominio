@@ -1,0 +1,18 @@
+{
+  "versao": "2.1.0",
+  "data": "2026-10-05",
+  "url": "https://drive.usercontent.google.com/download?id=1kRQ5tsjtKax-o17YFKrrXe7ZgOKeIRPP&export=download&confirm=t",
+  "novidades": [
+    "Quotas extraordinárias (menu Gestão): obras ou outras despesas aprovadas em assembleia, repartidas por permilagem, em partes iguais, por valor fixo ou à mão, com prestações e datas. Pagamentos por recibo, emails em circular (aviso, lembrete e confirmação), mapa e aviso de falta em PDF; aparecem nas Dívidas e no Painel.",
+    "As entradas que não são quotas (por exemplo, obras) deixam de contar como pagamento das quotas.",
+    "Relatório anual: página das quotas extraordinárias (só quando existem), com o que foi pago depois de 31/12 e a situação de hoje. A página \"Documentos entregues ao novo Administrador\" só sai quando há registos.",
+    "Dívidas: botão \"✎ Corrigir saldo inicial…\".",
+    "Botão 👁️ Visualizar para ver o recibo ou a ata tal como vão ser impressos, antes de os fechar.",
+    "Atas: texto impresso sem espaços em branco e lista de presenças logo a seguir. A lista é agora uma folha de assinaturas (Fração · Nome · Assinatura); o representante assina no lugar do proprietário, marcado com *.",
+    "Atas: nova coluna \"Procuração de\" — no fim da ata entra sozinho o parágrafo com as frações representadas, o representante e a data da procuração.",
+    "Atas: envio aos condóminos por email, em circular, com a ata e a declaração de tomada de conhecimento; o condómino responde \"Concordo\" ou \"Não concordo\" (com os motivos) e a aplicação regista quem tomou conhecimento. O texto da declaração pode ser alterado.",
+    "Importar condomínio de um ficheiro (menu Condomínio): trazer uma base de dados de outro computador, de uma pen ou de uma versão antiga — o ficheiro original não é alterado.",
+    "A janela da ata abre centrada.",
+    "Aviso de novas versões: a aplicação avisa quando há uma versão mais recente e mostra o que há de novo depois de atualizar (menu Ajuda → 🆕 Novidades)."
+  ]
+}
