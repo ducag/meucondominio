@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meu Condomínio</title>
+<meta name="description" content="Programa para Windows de gestão de condomínio: frações e permilagem, quotas, recibos, caixa e conta bancária, dívidas, orçamento, avisos de obras e relatório de contas em PDF. Experimente 31 dias grátis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,600;112,800;125,800&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+  :root {
+    --papel: #F3F5F1;
+    --superficie: #FFFFFF;
+    --tinta: #15231D;
+    --tinta-2: #3E4D45;
+    --mudo: #5E6D65;
+    --linha: #D5DCD5;
+    --verde: #1F7A4D;
+    --verde-forte: #17603C;
+    --verde-suave: #E1EFE6;
+    --azul: #2F5597;
+    --placa: #17221D;
+    --placa-texto: #EDF3EE;
+    --placa-mudo: #9DB0A5;
+    --aviso-fundo: #FFF5DB;
+    --aviso-texto: #6B4E00;
+    --sombra: 0 18px 40px -22px rgba(21, 35, 29, .45);
+    --display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+    --corpo: "Source Sans 3", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --mono: "IBM Plex Mono", Consolas, "Courier New", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --papel: #0E1512;
+      --superficie: #151F1A;
+      --tinta: #E4ECE6;
+      --tinta-2: #C3CFC7;
+      --mudo: #93A49A;
+      --linha: #26342D;
+      --verde: #4FB983;
+      --verde-forte: #6ECC9A;
+      --verde-suave: #183226;
+      --azul: #8FB0E8;
+      --placa: #1B2822;
+      --placa-texto: #EDF3EE;
+      --placa-mudo: #9DB0A5;
+      --aviso-fundo: #2E2710;
+      --aviso-texto: #F2D58A;
+      --sombra: 0 18px 40px -22px rgba(0, 0, 0, .8);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --papel: #0E1512;
+    --superficie: #151F1A;
+    --tinta: #E4ECE6;
+    --tinta-2: #C3CFC7;
+    --mudo: #93A49A;
+    --linha: #26342D;
+    --verde: #4FB983;
+    --verde-forte: #6ECC9A;
+    --verde-suave: #183226;
+    --azul: #8FB0E8;
+    --placa: #1B2822;
+    --placa-texto: #EDF3EE;
+    --placa-mudo: #9DB0A5;
+    --aviso-fundo: #2E2710;
+    --aviso-texto: #F2D58A;
+    --sombra: 0 18px 40px -22px rgba(0, 0, 0, .8);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--papel);
+    color: var(--tinta);
+    font-family: var(--corpo);
+    font-size: 17px;
+    line-height: 1.6;
+    padding-inline: clamp(16px, 4vw, 40px);
+  }
+  .contentor { max-width: 1160px; margin-inline: auto; }
+  a { color: var(--verde); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 3px solid var(--azul); outline-offset: 3px; border-radius: 4px;
+  }
+  h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; color: var(--tinta); }
+  .rotulo {
+    font-family: var(--mono); font-size: .78rem; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--mudo);
+  }
+
+  /* Faixa de configuração (só aparece enquanto faltar o link/contactos) */
+  .faixa-teste {
+    background: var(--aviso-fundo); color: var(--aviso-texto);
+    font-size: .92rem; padding: 8px 14px; border-radius: 0 0 8px 8px;
+    max-width: 1160px; margin-inline: auto;
+  }
+  .faixa-teste code { font-family: var(--mono); font-size: .85em; }
+
+  /* Topo */
+  .topo {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding-block: 22px; flex-wrap: wrap;
+  }
+  .marca { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--tinta); }
+  .marca svg { flex: none; }
+  .marca span { font-family: var(--display); font-weight: 800; font-stretch: 112%; font-size: 1.3rem; letter-spacing: -.01em; }
+  .topo nav { display: flex; gap: 22px; flex-wrap: wrap; }
+  .topo nav a { color: var(--tinta-2); text-decoration: none; font-weight: 600; }
+  .topo nav a:hover { color: var(--verde); }
+
+  /* Hero */
+  .hero {
+    display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+    gap: clamp(28px, 5vw, 64px); align-items: center;
+    padding-block: clamp(20px, 5vw, 56px) clamp(40px, 6vw, 72px);
+  }
+  .hero h1 {
+    font-size: clamp(2.1rem, 4.2vw, 3.3rem); line-height: 1.04; font-weight: 800;
+    font-stretch: 125%; letter-spacing: -.025em;
+  }
+  .hero h1 em { font-style: normal; color: var(--verde); }
+  .hero .lead { font-size: 1.15rem; color: var(--tinta-2); max-width: 36rem; margin: 22px 0 30px; }
+
+  /* A "placa" de download — lembra o quadro de condóminos da entrada do prédio */
+  .placa {
+    background: var(--placa); color: var(--placa-texto);
+    border-radius: 10px; padding: 22px 22px 20px; max-width: 30rem;
+    box-shadow: var(--sombra);
+  }
+  .placa dl {
+    display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; margin: 0 0 18px;
+    font-family: var(--mono); font-size: .88rem;
+  }
+  .placa dt { color: var(--placa-mudo); }
+  .placa dd { margin: 0; text-align: right; }
+  .placa dl > * { padding-bottom: 6px; border-bottom: 1px dashed rgba(157, 176, 165, .35); }
+  .botao {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    background: #2E9A62; color: #FFFFFF; font-family: var(--corpo); font-weight: 700;
+    font-size: 1.08rem; text-decoration: none; border: 0; border-radius: 8px;
+    padding: 14px 22px; width: 100%; cursor: pointer; transition: background .15s;
+  }
+  .botao:hover { background: #268454; }
+  .placa .nota { font-size: .86rem; color: var(--placa-mudo); margin: 12px 0 0; }
+
+  .janela {
+    background: var(--superficie); border: 1px solid var(--linha); border-radius: 12px;
+    box-shadow: var(--sombra); overflow: hidden;
+  }
+  .janela .barra {
+    display: flex; align-items: center; gap: 7px; padding: 10px 14px;
+    border-bottom: 1px solid var(--linha); font-family: var(--mono); font-size: .76rem; color: var(--mudo);
+  }
+  .janela .barra i { width: 10px; height: 10px; border-radius: 50%; background: var(--linha); display: block; }
+  .janela .barra span { margin-left: 8px; }
+  .janela img { display: block; width: 100%; height: auto; }
+
+  /* Secções */
+  section { padding-block: clamp(40px, 6vw, 72px); border-top: 1px solid var(--linha); }
+  .cabeca { display: grid; gap: 10px; margin-bottom: 32px; max-width: 44rem; }
+  .cabeca h2 { font-size: clamp(1.7rem, 3.2vw, 2.4rem); font-weight: 800; font-stretch: 112%; letter-spacing: -.015em; line-height: 1.1; }
+  .cabeca p { margin: 0; color: var(--tinta-2); }
+
+  .funcoes {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 0; border-top: 2px solid var(--tinta);
+  }
+  .funcoes article { padding: 20px 20px 22px 0; border-bottom: 1px solid var(--linha); }
+  .funcoes h3 { font-size: 1.12rem; font-weight: 800; font-stretch: 112%; margin-bottom: 6px; }
+  .funcoes p { margin: 0; color: var(--tinta-2); font-size: .98rem; }
+
+  /* Galeria */
+  .separadores { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+  .separadores button {
+    font: 600 .95rem var(--corpo); color: var(--tinta-2); background: transparent;
+    border: 1px solid var(--linha); border-radius: 999px; padding: 8px 16px; cursor: pointer;
+  }
+  .separadores button[aria-selected="true"] { background: var(--tinta); border-color: var(--tinta); color: var(--papel); }
+  .legenda { color: var(--mudo); font-size: .95rem; margin: 14px 0 0; max-width: 60rem; }
+
+  /* Instalação */
+  .passos { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: passo; }
+  .passos li {
+    counter-increment: passo; display: grid; grid-template-columns: 3.4rem minmax(0, 1fr);
+    gap: 0 18px; padding: 20px 0; border-bottom: 1px solid var(--linha);
+  }
+  .passos li::before {
+    content: counter(passo); font-family: var(--display); font-weight: 800; font-stretch: 125%;
+    font-size: 2.2rem; line-height: 1; color: var(--verde);
+  }
+  .passos h3 { font-size: 1.15rem; font-weight: 800; font-stretch: 112%; margin-bottom: 4px; }
+  .passos p { margin: 0; color: var(--tinta-2); max-width: 44rem; }
+  .ecra-aviso {
+    margin-top: 12px; max-width: 30rem; background: #1F5FAD; color: #FFFFFF;
+    border-radius: 6px; padding: 14px 16px; font-size: .92rem; line-height: 1.45;
+  }
+  .ecra-aviso strong { display: block; font-size: 1.05rem; margin-bottom: 4px; }
+  .ecra-aviso .fila { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .ecra-aviso .fila span { border: 1px solid rgba(255,255,255,.7); padding: 4px 10px; border-radius: 3px; font-size: .85rem; }
+  .ecra-aviso u { text-underline-offset: 3px; }
+  kbd, .mono { font-family: var(--mono); font-size: .88em; }
+  kbd { background: var(--verde-suave); color: var(--tinta); padding: 1px 6px; border-radius: 4px; }
+
+  /* Licença */
+  .licenca { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: start; }
+  .licenca ul { margin: 0; padding-left: 1.1rem; color: var(--tinta-2); }
+  .licenca li + li { margin-top: 8px; }
+  .cartao-id {
+    background: var(--superficie); border: 1px solid var(--linha); border-radius: 10px; padding: 20px;
+  }
+  .cartao-id .id {
+    font-family: var(--mono); font-size: .8rem; word-break: break-all; background: var(--verde-suave);
+    padding: 10px 12px; border-radius: 6px; margin: 10px 0 14px; color: var(--tinta);
+  }
+  .planos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .plano { border: 1px solid var(--linha); border-radius: 8px; padding: 14px 16px; }
+  .plano b { font-family: var(--display); font-stretch: 112%; font-size: 1.1rem; display: block; }
+  .plano span { color: var(--mudo); font-size: .92rem; }
+
+  /* Perguntas */
+  .perguntas { display: grid; gap: 0; border-top: 2px solid var(--tinta); max-width: 52rem; }
+  details { border-bottom: 1px solid var(--linha); padding: 16px 0; }
+  summary { cursor: pointer; font-weight: 700; font-size: 1.05rem; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font-family: var(--mono); color: var(--verde); font-size: 1.2rem; line-height: 1; }
+  details[open] summary::after { content: "–"; }
+  details p { margin: 10px 0 0; color: var(--tinta-2); }
+
+  footer {
+    border-top: 1px solid var(--linha); padding-block: 28px 40px; color: var(--mudo); font-size: .92rem;
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  }
+
+  @media (max-width: 860px) {
+    .hero, .licenca { grid-template-columns: minmax(0, 1fr); }
+    .placa { max-width: none; }
+  }
+  @media (max-width: 480px) {
+    .planos { grid-template-columns: minmax(0, 1fr); }
+    .topo nav { gap: 14px; font-size: .95rem; }
+    .passos li { grid-template-columns: 2.4rem minmax(0, 1fr); }
+    .passos li::before { font-size: 1.7rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="faixa-teste" id="faixa-teste" hidden>
+  <strong>Página de teste.</strong> Ainda falta configurar: <span id="faltas"></span>
+  — edita o bloco <code>CONFIG</code> no fim do ficheiro.
+</div>
+
+<div class="contentor">
+  <header class="topo">
+    <a class="marca" href="#inicio" aria-label="Meu Condomínio — início">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+        <rect x="5" y="3" width="24" height="28" rx="2" fill="var(--tinta)"/>
+        <rect x="9" y="7" width="6" height="5" fill="var(--papel)"/><rect x="19" y="7" width="6" height="5" fill="var(--papel)"/>
+        <rect x="9" y="15" width="6" height="5" fill="var(--papel)"/><rect x="19" y="15" width="6" height="5" fill="#2E9A62"/>
+        <rect x="14" y="23" width="6" height="8" fill="var(--papel)"/>
+      </svg>
+      <span>Meu Condomínio</span>
+    </a>
+    <nav aria-label="Secções">
+      <a href="#funcoes">O que faz</a>
+      <a href="#ecras">Ecrãs</a>
+      <a href="#instalar">Instalar</a>
+      <a href="#licenca">Licença</a>
+      <a href="#perguntas">Perguntas</a>
+    </nav>
+  </header>
+
+  <main id="inicio">
+    <div class="hero">
+      <div>
+        <p class="rotulo">Gestão de condomínio · Windows</p>
+        <h1>Das quotas ao relatório da assembleia, <em>sem folhas de cálculo.</em></h1>
+        <p class="lead">O Meu Condomínio regista frações, quotas, caixa e conta bancária, calcula as dívidas
+          e o orçamento do ano seguinte por permilagem, e gera o relatório de contas pronto a apresentar em assembleia.
+          Envia recibos, avisos e circulares por email e partilha os documentos com os condóminos.
+          Os dados ficam no seu computador.</p>
+        <div class="placa">
+          <dl>
+            <dt>Versão</dt><dd>1.1.0</dd>
+            <dt>Sistema</dt><dd>Windows 10 / 11 · 64 bits</dd>
+            <dt>Ficheiro</dt><dd>MeuCondominio_Setup.exe</dd>
+            <dt>Tamanho</dt><dd>49 MB</dd>
+          </dl>
+          <a class="botao js-download" href="#" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2v11m0 0l-4.5-4.5M10 13l4.5-4.5M3 17h14" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Descarregar para Windows
+          </a>
+          <p class="nota"><strong>Experimente 31 dias grátis</strong>, com todas as funções — sem registo nem licença.
+            Depois, veja <a href="#licenca" style="color:inherit">como obter a licença</a>.</p>
+        </div>
+      </div>
+      <figure class="janela" style="margin:0">
+        <div class="barra" aria-hidden="true"><i></i><i></i><i></i><span>Condomínio Outeiro 35 — Visão geral</span></div>
+        <img src="img/ecra_1.jpg" width="1440" height="880" alt="Ecrã inicial do Meu Condomínio: saldos de caixa e conta, total e número de frações, e a lista de frações com os proprietários.">
+      </figure>
+    </div>
+
+    <section id="funcoes" aria-labelledby="t-funcoes">
+      <div class="cabeca">
+        <p class="rotulo">O que faz</p>
+        <h2 id="t-funcoes">Tudo o que a administração de um prédio precisa num ano de contas</h2>
+      </div>
+      <div class="funcoes">
+        <article><h3>Frações e contactos</h3><p>Permilagem e quota de cada fração, isenções num ano, proprietários e representantes, com telefone e email.</p></article>
+        <article><h3>Caixa e conta à ordem</h3><p>Entradas e despesas lado a lado, saldo sempre atualizado, várias contas bancárias e transferências entre elas.</p></article>
+        <article><h3>Quotas, dívidas e recibos</h3><p>Uma só tabela com o que cada fração pagou e o que falta, de anos anteriores incluído. Recibos numerados, enviados por email a quem pagou.</p></article>
+        <article><h3>Orçamento por permilagem</h3><p>Previsão para o ano seguinte com quotas calculadas por permilagem, por percentagem ou fração a fração, fundo comum de reserva e obras.</p></article>
+        <article><h3>Relatório de contas em PDF</h3><p>Caixa, conta, balancete, dívidas e orçamento num só documento, com capa em quatro estilos e o seu logótipo. Versão com ou sem contactos.</p></article>
+        <article><h3>Assembleia e documentos</h3><p>Convocatória, lista de presenças, procurações, atas, avisos de pagamento em falta, declarações de quotas pagas e cartas.</p></article>
+        <article><h3>Avisos de obras</h3><p>Avise os condóminos de obras e cortes de água ou luz por email, com declaração de tomada de conhecimento e registo de quem confirmou.</p></article>
+        <article><h3>Partilha com os condóminos</h3><p>Publica atas, relatórios e avisos numa pasta do Google Drive, com página própria do condomínio e circular por email.</p></article>
+        <article><h3>Assinatura do administrador</h3><p>Assinatura digitalizada nos documentos, protegida por PIN, ou assinatura digital com o Cartão de Cidadão / Chave Móvel Digital.</p></article>
+        <article><h3>Prazos e arquivo</h3><p>Seguros, inspeções e contratos com alerta antes do fim do prazo; arquivo de documentos do prédio organizado por tipo.</p></article>
+        <article><h3>Vários condomínios</h3><p>Administra vários prédios na mesma instalação — cada um com os seus dados, que nunca se misturam.</p></article>
+        <article><h3>Cópias de segurança</h3><p>Feitas sozinhas ao abrir e ao fechar o programa, com cópia extra para uma segunda pasta (pen, Drive, OneDrive).</p></article>
+      </div>
+    </section>
+
+    <section id="ecras" aria-labelledby="t-ecras">
+      <div class="cabeca">
+        <p class="rotulo">Ecrãs</p>
+        <h2 id="t-ecras">Veja como é por dentro</h2>
+        <p>Imagens com dados fictícios de demonstração.</p>
+      </div>
+      <div class="separadores" role="tablist" aria-label="Ecrãs do programa">
+        <button role="tab" id="tab-dividas" aria-selected="true" aria-controls="painel-ecra" data-ecra="dividas">Dívidas</button>
+        <button role="tab" id="tab-orcamento" aria-selected="false" aria-controls="painel-ecra" data-ecra="orcamento">Orçamento</button>
+        <button role="tab" id="tab-documentos" aria-selected="false" aria-controls="painel-ecra" data-ecra="documentos">Documentos</button>
+        <button role="tab" id="tab-obras" aria-selected="false" aria-controls="painel-ecra" data-ecra="obras">Avisos de obras</button>
+        <button role="tab" id="tab-condominio" aria-selected="false" aria-controls="painel-ecra" data-ecra="condominio">Condomínio</button>
+      </div>
+      <figure class="janela" id="painel-ecra" role="tabpanel" style="margin:0">
+        <div class="barra" aria-hidden="true"><i></i><i></i><i></i><span id="ecra-titulo">Condomínio Outeiro 35 — Dívidas</span></div>
+        <img id="ecra-img" src="img/ecra_2.jpg" width="1440" height="880" alt="">
+      </figure>
+      <p class="legenda" id="ecra-legenda"></p>
+    </section>
+
+    <section id="instalar" aria-labelledby="t-instalar">
+      <div class="cabeca">
+        <p class="rotulo">Instalar</p>
+        <h2 id="t-instalar">Instalar em quatro passos</h2>
+        <p>Não precisa de palavra-passe de administrador. A instalação fica na pasta de programas do seu utilizador.</p>
+      </div>
+      <ol class="passos">
+        <li>
+          <div>
+            <h3>Descarregar o instalador</h3>
+            <p>Carregue em <strong>Descarregar para Windows</strong>. O Google Drive abre numa nova janela — guarde o ficheiro
+              <span class="mono">MeuCondominio_Setup.exe</span>.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Abrir o instalador</h3>
+            <p>Por ser um programa novo, o Windows pode mostrar um aviso azul. Carregue em <strong>Mais informações</strong>
+              e depois em <strong>Executar mesmo assim</strong>.</p>
+            <div class="ecra-aviso" role="img" aria-label="Aviso do Windows: O Windows protegeu o seu PC, com as opções Mais informações e Executar mesmo assim.">
+              <strong>O Windows protegeu o seu PC</strong>
+              O Microsoft Defender SmartScreen impediu o arranque de uma aplicação não reconhecida…
+              <br><u>Mais informações</u>
+              <div class="fila"><span>Executar mesmo assim</span><span>Não executar</span></div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Instalar</h3>
+            <p>Siga o instalador até ao fim. Pode criar um atalho no ambiente de trabalho.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Começar a usar</h3>
+            <p>Ao abrir pela primeira vez começa a <strong>avaliação gratuita de 31 dias</strong>, com todas as funções.
+              Para continuar depois disso, carregue em <kbd>Copiar</kbd> o seu <strong>ID de Máquina</strong> e envie-o
+              por email com o NIF do condomínio: receberá um ficheiro de licença (<span class="mono">.lic</span>).
+              Depois, em <strong>Importar Ficheiro de Licença…</strong>, escolha esse ficheiro.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section id="licenca" aria-labelledby="t-licenca">
+      <div class="licenca">
+        <div>
+          <div class="cabeca" style="margin-bottom:20px">
+            <p class="rotulo">Licença</p>
+            <h2 id="t-licenca">Experimente primeiro, licencie depois</h2>
+          </div>
+          <ul>
+            <li>Os primeiros <strong>31 dias são grátis</strong>, com tudo a funcionar. Os PDF dessa fase levam a marca
+              “Versão de avaliação”.</li>
+            <li>A licença é verificada no próprio computador — o programa não precisa de ligar à internet.</li>
+            <li>Quando a licença (ou a avaliação) acaba, o programa passa a <strong>só de leitura</strong>: vê e
+              consulta tudo, sem perder dados, até importar um ficheiro <span class="mono">.lic</span> novo.</li>
+            <li>A data de validade e o pedido de renovação estão em <strong>Ajuda → Licença</strong>.</li>
+          </ul>
+          <div class="planos" style="margin-top:22px">
+            <div class="plano"><b>Avaliação</b><span>31 dias grátis · todas as funções · automática</span></div>
+            <div class="plano"><b>Um condomínio</b><span>Ligada ao NIF do condomínio · um computador · <span class="js-preco-mensal">preço a definir</span></span></div>
+            <div class="plano"><b>Multicondomínio 5</b><span>Até 5 condomínios · até 3 computadores · <span class="js-preco-anual">preço a definir</span></span></div>
+            <div class="plano"><b>Multicondomínio 30</b><span>Até 30 condomínios · até 3 computadores · <span class="js-preco-multi">preço a definir</span></span></div>
+          </div>
+        </div>
+        <div class="cartao-id">
+          <p class="rotulo">Pedir licença</p>
+          <p style="margin:6px 0 0">Envie o ID de Máquina que o programa mostra. É parecido com este (exemplo):</p>
+          <div class="id">a3f9c2e17b4d58069e21c7f0b3d8e45a6c19f72b0e8d4a53c61f9b27e0d4c8a1</div>
+          <p style="margin:0">Para: <span class="mono js-email">email a definir</span></p>
+          <p style="margin:6px 0 0;color:var(--mudo);font-size:.92rem">Indique também o nome e o <strong>NIF do condomínio</strong>
+            (ou de cada condomínio, no multicondomínio) e o tipo de licença que pretende.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="perguntas" aria-labelledby="t-perguntas">
+      <div class="cabeca">
+        <p class="rotulo">Perguntas</p>
+        <h2 id="t-perguntas">Perguntas frequentes</h2>
+      </div>
+      <div class="perguntas">
+        <details><summary>Onde ficam os meus dados?</summary>
+          <p>No seu computador, na pasta de instalação do programa. Nada é enviado para a internet. Cada condomínio tem o seu próprio ficheiro de dados e a sua pasta de cópias de segurança.</p></details>
+        <details><summary>Preciso de internet?</summary>
+          <p>Só para descarregar o instalador, receber o ficheiro de licença e enviar emails ou partilhar documentos. A gestão do condomínio funciona sempre sem internet.</p></details>
+        <details><summary>Posso administrar vários prédios?</summary>
+          <p>Sim. Escolha o condomínio na barra do topo, ou crie outro com o botão Novo. Os dados de cada prédio ficam separados.</p></details>
+        <details><summary>E se o computador avariar?</summary>
+          <p>O programa guarda cópias de segurança automáticas (as 7 mais recentes) e pode copiá-las também para uma segunda pasta — uma pen, o Google Drive ou o OneDrive. Num computador novo, instale o programa, reponha a cópia e peça a transferência da licença para o novo ID de Máquina.</p></details>
+        <details><summary>O que acontece quando a licença expira?</summary>
+          <p>Nada se perde. O programa fica em modo só de leitura: pode consultar e imprimir o que já existe, mas não registar nada novo. Ao importar o ficheiro de licença renovado, tudo volta ao normal.</p></details>
+        <details><summary>Os condóminos podem consultar os documentos?</summary>
+          <p>Sim. O programa publica atas, relatórios de contas e avisos numa pasta partilhada do Google Drive e gera uma página do condomínio com os links. Os contactos pessoais não são publicados: o relatório partilhado sai sem a lista de contactos.</p></details>
+        <details><summary>Porque aparece o aviso do Windows ao instalar?</summary>
+          <p>O Windows avisa sempre que abre um programa novo que ainda não conhece. É esperado: carregue em Mais informações e Executar mesmo assim.</p></details>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>© <span id="ano">2026</span> Meu Condomínio</span>
+    <span>Versão 1.1.0 · Windows 10 e 11</span>
+  </footer>
+</div>
+
+<script>
+  // ================= CONFIG — preencher antes de publicar =================
+  // DRIVE_FILE_ID: o ID do ficheiro no Google Drive. No link de partilha
+  //   https://drive.google.com/file/d/1AbCdEf.../view?usp=sharing  o ID é  1AbCdEf...
+  //   A partilha tem de estar em "Qualquer pessoa com o link".
+  // EMAIL: endereço para pedidos de licença.
+  // PRECO_MENSAL = Um condomínio, PRECO_ANUAL = Multicondomínio 5, PRECO_MULTI = Multicondomínio 30.
+  //   Texto livre (ex.: "49 € / ano"); vazio = "preço a definir".
+  const CONFIG = {
+    DRIVE_FILE_ID: '1kRQ5tsjtKax-o17YFKrrXe7ZgOKeIRPP',
+    EMAIL: 'grichaduca@gmail.com',
+    PRECO_MENSAL: '',
+    PRECO_ANUAL: '',
+    PRECO_MULTI: '',
+  };
+  // =======================================================================
+
+  (function () {
+    const faltas = [];
+    const linkDrive = CONFIG.DRIVE_FILE_ID
+      // drive.usercontent + confirm=t: descarrega logo, sem a página intermédia do Drive
+      // "não é possível verificar se este ficheiro tem vírus" (mostrada para .exe).
+      ? 'https://drive.usercontent.google.com/download?id=' + encodeURIComponent(CONFIG.DRIVE_FILE_ID) + '&export=download&confirm=t'
+      : '';
+    document.querySelectorAll('.js-download').forEach(function (a) {
+      if (linkDrive) { a.href = linkDrive; }
+      else {
+        a.href = '#instalar';
+        a.removeAttribute('target');
+        a.title = 'Link de download ainda não configurado';
+      }
+    });
+    if (!linkDrive) faltas.push('link do Google Drive');
+
+    if (CONFIG.EMAIL) {
+      document.querySelectorAll('.js-email').forEach(function (el) {
+        el.textContent = '';
+        const a = document.createElement('a');
+        a.href = 'mailto:' + CONFIG.EMAIL + '?subject=' + encodeURIComponent('Pedido de licença — Meu Condomínio');
+        a.textContent = CONFIG.EMAIL;
+        el.appendChild(a);
+      });
+    } else faltas.push('email de contacto');
+
+    if (CONFIG.PRECO_MENSAL) document.querySelector('.js-preco-mensal').textContent = CONFIG.PRECO_MENSAL;
+    if (CONFIG.PRECO_ANUAL) document.querySelector('.js-preco-anual').textContent = CONFIG.PRECO_ANUAL;
+    if (CONFIG.PRECO_MULTI) document.querySelector('.js-preco-multi').textContent = CONFIG.PRECO_MULTI;
+    if (!CONFIG.PRECO_MENSAL || !CONFIG.PRECO_ANUAL || !CONFIG.PRECO_MULTI) faltas.push('preços');
+
+    if (faltas.length) {
+      document.getElementById('faltas').textContent = faltas.join(', ');
+      document.getElementById('faixa-teste').hidden = false;
+    }
+    document.getElementById('ano').textContent = new Date().getFullYear();
+
+    // Galeria de ecrãs
+    const ECRAS = {
+      dividas: { src: 'img/ecra_2.jpg', titulo: 'Dívidas',
+        legenda: 'Dívidas: numa só tabela, o que cada fração devia de anos anteriores, a quota do ano, o que pagou e o que falta.' },
+      orcamento: { src: 'img/ecra_3.jpg', titulo: 'Orçamento',
+        legenda: 'Orçamento: a despesa prevista para o ano seguinte e as quotas de cada fração, calculadas por permilagem, por percentagem ou uma a uma.' },
+      documentos: { src: 'img/ecra_4.jpg', titulo: 'Documentos para imprimir',
+        legenda: 'Documentos para a assembleia e para os condóminos — convocatória, procurações, avisos, declarações e cartas — em PDF, impressos ou por email.' },
+      obras: { src: 'img/ecra_5.jpg', titulo: 'Avisos de obras',
+        legenda: 'Avisos de obras: email em forma de circular com a declaração em anexo, e a lista de quem tomou conhecimento.' },
+      condominio: { src: 'img/ecra_6.jpg', titulo: 'Condomínio',
+        legenda: 'Condomínio: dados do prédio, estilo da capa do relatório e assinatura do administrador, em separadores.' },
+    };
+    const img = document.getElementById('ecra-img');
+    const titulo = document.getElementById('ecra-titulo');
+    const legenda = document.getElementById('ecra-legenda');
+    const botoes = document.querySelectorAll('.separadores button');
+    function mostrar(chave) {
+      const e = ECRAS[chave];
+      img.src = e.src;
+      img.alt = e.legenda;
+      titulo.textContent = 'Condomínio Outeiro 35 — ' + e.titulo;
+      legenda.textContent = e.legenda;
+      botoes.forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.ecra === chave)); });
+    }
+    botoes.forEach(function (b) { b.addEventListener('click', function () { mostrar(b.dataset.ecra); }); });
+    mostrar('dividas');
+  })();
+</script>
